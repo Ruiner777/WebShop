@@ -4,4 +4,4 @@ shop/.env
 shop/.env.local
 shop/.env.*
 
-shop/main/static/img
+shop/main/static/img/
