@@ -9,8 +9,12 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
+from dotenv import load_dotenv
 from pathlib import Path
+
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +24,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-y48^1(1&6+r8_7^&-lqx+tcr204fwo&9%pkk4veh8$!xy2*b@#'
+SECRET_KEY = os.getenv('SECRET_KEY', 'fallback-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [host.strip() for host in os.getenv('ALLOWED_HOSTS', '').split(',') if host]
 
 
 # Application definition
@@ -82,11 +86,11 @@ WSGI_APPLICATION = 'shop.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'shop',
-        'USER': 'shop',
-        'PASSWORD': '12345678',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': os.getenv('DB_NAME', 'shop'),
+        'USER': os.getenv('DB_USER', 'shop'),
+        'PASSWORD': os.getenv('DB_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': int(os.getenv('DB_PORT', '5432')),
     }
 }
 
@@ -139,8 +143,8 @@ CART_SESSION_ID = 'cart'
 
 AUTH_USER_MODEL = 'users.User'
 
-STRIPE_PUBLISHABLE_KEY = 'pk_test_51SRAsSB0joZRTAhVvjmZBCkIp9Am1waAo1QI8JmG3G6w7fPvbOfWP49cPa5rwZj22m6ZB6yt4v3PtHsEqHtNPJdn00qSdwpPPP'
-STRIPE_SECRET_KEY = 'sk_test_51SRAsSB0joZRTAhVWUnJESQI7c8L3leP6yCarpbLggBcjCHS69fBdpUPnuWazNHJpQIUnVjJKb6vNEEkHeoB7nsi00OOlu65BO'
+STRIPE_PUBLISHABLE_KEY = os.getenv('STRIPE_PUBLISHABLE_KEY', '')
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY', '')
 STRIPE_API_VERSION = '2022-08-01'
 
-STRIPE_WEBHOOK_SECRET = 'whsec_037759d41a231096fd79eca4322339f0733f94d6dbb87019dbe3090029d28dd0'
+STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET', '')
