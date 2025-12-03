@@ -1,7 +1,13 @@
+# Python
+
 venv/
+
+# Environment
 
 shop/.env
 shop/.env.local
 shop/.env.*
+
+# Images
 
 shop/main/static/img/

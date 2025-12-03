@@ -1,9 +1,15 @@
+# Python
+
 venv/
 .pylintrc
 __pycache__/
 
+# IDE
+
 .vscode
 .idea
+
+# Django
 
 db.sqlite3
 media/
