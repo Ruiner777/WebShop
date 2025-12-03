@@ -1,1 +1,5 @@
 venv/
+
+shop/.env
+shop/.env.local
+shop/.env.*
