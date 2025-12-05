@@ -1,15 +1,24 @@
-# Python
+# Local environment
+.env
+.env.local
+.env.*.local
+.env.production
 
-venv/
-.pylintrc
-__pycache__/
-
-# IDE
-
-.vscode
-.idea
-
-# Django
-
+# Django dev
+*.log
 db.sqlite3
-media/
+db.sqlite3-journal
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# Temp files
+*.tmp
+*.temp
+
+# OS
+.DS_Store
+Thumbs.db
