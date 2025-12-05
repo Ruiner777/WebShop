@@ -1,0 +1,160 @@
+# ==============================================
+# АВТООПРЕДЕЛЕНИЕ ТЕКСТОВЫХ ФАЙЛОВ
+# ==============================================
+* text=auto
+
+# ==============================================
+# ЯВНОЕ ОПРЕДЕЛЕНИЕ ТЕКСТОВЫХ ФАЙЛОВ С LF
+# ==============================================
+
+# Python файлы
+*.py text eol=lf
+*.pyi text eol=lf
+
+# Django шаблоны и статика
+*.html text eol=lf
+*.htm text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.xml text eol=lf
+*.svg text eol=lf
+
+# Конфигурационные файлы
+*.yml text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+*.ini text eol=lf
+*.cfg text eol=lf
+*.conf text eol=lf
+*.env text eol=lf
+*.env.* text eol=lf
+
+# Файлы зависимостей
+Pipfile text eol=lf
+pyproject.toml text eol=lf
+setup.py text eol=lf
+setup.cfg text eol=lf
+requirements.txt text eol=lf
+requirements/*.txt text eol=lf
+
+# Документация
+*.md text eol=lf
+*.rst text eol=lf
+*.txt text eol=lf
+*.log text eol=lf
+
+# Git файлы
+.gitignore text eol=lf
+.gitattributes text eol=lf
+.gitmodules text eol=lf
+
+# Прочие конфиги
+.editorconfig text eol=lf
+.pre-commit-config.yaml text eol=lf
+docker-compose.yml text eol=lf
+docker-compose.*.yml text eol=lf
+Dockerfile text eol=lf
+.dockerignore text eol=lf
+*.dockerfile text eol=lf
+
+# Django специфичные
+*.po text eol=lf
+*.mo binary
+*.pot text eol=lf
+
+# ==============================================
+# БИНАРНЫЕ ФАЙЛЫ (НЕ КОНВЕРТИРОВАТЬ)
+# ==============================================
+
+# Изображения
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.bmp binary
+*.tiff binary
+*.webp binary
+
+# Шрифты
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.otf binary
+
+# Архивы и исполняемые файлы
+*.zip binary
+*.tar binary
+*.gz binary
+*.7z binary
+*.rar binary
+*.exe binary
+*.dll binary
+*.so binary
+*.dylib binary
+
+# Python бинарные файлы
+*.pyc binary
+*.pyo binary
+*.pyd binary
+__pycache__/ binary
+
+# Базы данных и кэши
+*.db binary
+*.sqlite3 binary
+*.cache binary
+
+# Медиа
+*.mp3 binary
+*.mp4 binary
+*.wav binary
+*.avi binary
+*.mov binary
+
+# Документы
+*.pdf binary
+*.doc binary
+*.docx binary
+*.xls binary
+*.xlsx binary
+*.ppt binary
+*.pptx binary
+
+# ==============================================
+# СПЕЦИАЛЬНЫЕ ПРАВИЛА ДЛЯ ОПРЕДЕЛЕННЫХ ПАПОК
+# ==============================================
+
+# Игнорировать line endings в виртуальном окружении
+venv/ -text
+env/ -text
+.venv/ -text
+*.env/ -text
+
+# Медиа файлы - бинарные
+media/** -text
+
+# Статика - некоторые файлы бинарные
+static/**/*.png binary
+static/**/*.jpg binary
+static/**/*.gif binary
+static/**/*.ico binary
+static/**/*.woff binary
+static/**/*.woff2 binary
+
+# ==============================================
+# ПРАВИЛА ДЛЯ ОПРЕДЕЛЕННЫХ ФАЙЛОВ
+# ==============================================
+
+# Windows batch files должны иметь CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Shell scripts должны иметь LF
+*.sh text eol=lf
+
+# Makefiles должны иметь LF (важно для табуляции)
+Makefile text eol=lf
+makefile text eol=lf
+*.mk text eol=lf
