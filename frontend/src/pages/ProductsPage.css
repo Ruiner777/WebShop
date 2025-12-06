@@ -1,0 +1,226 @@
+/* Стили для страницы списка продуктов из base.css */
+
+.llist {
+    margin-left: -80px;
+}
+
+.sidebar {
+    margin-top: 70px;
+}
+
+.sidebar h3 {
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+
+.sidebar ul {
+    margin-top: 20px;
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    font-size: 20px;
+    width: 165px;
+    height: 35px;
+    margin-bottom: 5px;
+}
+
+.sidebar ul li a {
+    margin-left: 15px;
+    width: 165px;
+    display: block;
+    color: #000;
+    text-decoration: none;
+}
+
+.sidebar ul li.selected {
+    border: 1px solid #000;
+    border-radius: 5px;
+    background-image: url('http://localhost:8000/static/img/categories-gtn.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.main {
+    margin-left: 150px;
+    width: 100%;
+}
+
+.main-title {
+    font-size: 36px;
+    margin-bottom: 10px;
+    margin-top: 65px;
+}
+
+.product-list {
+    margin-bottom: 50px;
+}
+
+.items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 225px);
+    width: 100%;
+    max-width: 1300px;
+    justify-content: center;
+    justify-items: center;
+    column-gap: 0px;
+    row-gap: 10px;
+    margin: 0 auto;
+}
+
+.item {
+    width: 100%;
+}
+
+.home-card {
+    width: 200px;
+    height: 325px;
+    border: 1px solid #00000027;
+    border-radius: 5px;
+    transition: all 0.5s ease;
+    background-color: #fff;
+    color: #000;
+    text-decoration: none;
+}
+
+.home-card:hover {
+    border: 1px solid #000;
+}
+
+.title-card {
+    max-width: 185px;
+    margin-top: 20px;
+    min-height: 70px;
+}
+
+.card-img {
+    width: 195px;
+    height: 195px;
+    object-fit: cover;
+}
+
+.price {
+    font-size: 20px;
+    font-weight: 700;
+    margin-top: -10px;
+}
+
+.cart-discount {
+    margin-top: -10px;
+    font-weight: 600;
+}
+
+.cart-discount .price {
+    margin-top: -1px;
+}
+
+.line {
+    opacity: 0.7;
+    text-decoration: line-through;
+    font-weight: 300;
+}
+
+.pagination {
+    display: flex;
+    position: relative;
+    bottom: auto;
+    left: auto;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    list-style: none;
+    padding: 0;
+}
+
+.pagination li {
+    margin: 0;
+}
+
+.pagination-btn {
+    padding: 8px 16px;
+    border: 1px solid #00000027;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #000;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    border: 1px solid #000;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.2;
+    cursor: not-allowed;
+}
+
+.pagination-btn.active {
+    border: 1px solid #000;
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+.pagination .disabled {
+    opacity: 0.2;
+}
+
+.search-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    margin-top: 20px;
+}
+
+.search-input {
+    flex: 1;
+    max-width: 400px;
+    padding: 10px 15px;
+    border: 1px solid #00000027;
+    border-radius: 5px;
+    font-size: 16px;
+    font-family: "Carrois Gothic", sans-serif;
+}
+
+.search-input:focus {
+    outline: none;
+    border: 1px solid #000;
+}
+
+.search-btn {
+    padding: 10px 20px;
+    border: 1px solid #00000027;
+    border-radius: 5px;
+    background-color: #fff;
+    color: #000;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+    font-family: "Carrois Gothic", sans-serif;
+}
+
+.search-btn:hover {
+    border: 1px solid #000;
+}
+
+.products-loading,
+.products-error,
+.no-products {
+    text-align: center;
+    padding: 3rem;
+    margin-top: 100px;
+}
+
+.products-error {
+    color: #dc3545;
+}
+
+.no-products {
+    color: #666;
+    font-size: 18px;
+}
+
