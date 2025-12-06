@@ -1,0 +1,79 @@
+import axios from 'axios';
+
+// Создаем экземпляр axios с базовым URL
+const api = axios.create({
+  baseURL: '/api',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Интерцептор для добавления токена аутентификации
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      config.headers.Authorization = `Token ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Интерцептор для обработки ошибок
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Токен недействителен, удаляем его
+      localStorage.removeItem('authToken');
+    }
+    return Promise.reject(error);
+  }
+);
+
+// API методы
+export const categoriesAPI = {
+  getAll: () => api.get('/v1/categories/'),
+  getBySlug: (slug) => api.get(`/v1/categories/${slug}/`),
+  create: (data) => api.post('/v1/categories/', data),
+  update: (slug, data) => api.put(`/v1/categories/${slug}/`, data),
+  delete: (slug) => api.delete(`/v1/categories/${slug}/`),
+};
+
+export const productsAPI = {
+  getAll: (params) => api.get('/v1/products/', { params }),
+  getBySlug: (slug) => api.get(`/v1/products/${slug}/`),
+  getAvailable: () => api.get('/v1/products/available/'),
+  create: (data) => api.post('/v1/products/', data),
+  update: (slug, data) => api.put(`/v1/products/${slug}/`, data),
+  delete: (slug) => api.delete(`/v1/products/${slug}/`),
+};
+
+export const usersAPI = {
+  getAll: () => api.get('/v1/users/'),
+  getMe: () => api.get('/v1/users/me/'),
+  create: (data) => api.post('/v1/users/', data),
+  update: (id, data) => api.put(`/v1/users/${id}/`, data),
+  delete: (id) => api.delete(`/v1/users/${id}/`),
+};
+
+export const ordersAPI = {
+  getAll: () => api.get('/v1/orders/'),
+  getById: (id) => api.get(`/v1/orders/${id}/`),
+  create: (data) => api.post('/v1/orders/', data),
+  update: (id, data) => api.put(`/v1/orders/${id}/`, data),
+  delete: (id) => api.delete(`/v1/orders/${id}/`),
+};
+
+export const authAPI = {
+  getToken: (username, password) => 
+    api.post('/v1/auth-token/', { username, password }),
+};
+
+export default api;
+
+
+

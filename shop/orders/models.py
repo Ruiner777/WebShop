@@ -16,6 +16,12 @@ class Order(models.Model):
     updated = models.DateTimeField(auto_now=True)
     paid = models.BooleanField(default=False)
 
+    stripe_id = models.CharField(
+        max_length=250, 
+        blank=True, 
+        help_text="ID платежа в Stripe"
+    )
+
 
     class Meta:
         ordering = ['-created']
@@ -30,6 +36,13 @@ class Order(models.Model):
 
     def get_total_cost(self):
         return sum(item.get_cost() for item in self.items.all())
+
+    
+    def get_stripe_url(self):
+        """Возвращает ссылку на оплату Stripe"""
+        if self.stripe_id:
+            return f"https://dashboard.stripe.com/payments/{self.stripe_id}"
+        return ""
     
 
 class OrderItem(models.Model):
