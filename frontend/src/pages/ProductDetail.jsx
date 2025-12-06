@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { productsAPI } from '../api'
+import { useCart } from '../contexts/CartContext'
 import './ProductDetail.css'
 
 function ProductDetail() {
   const { slug } = useParams()
+  const { addItem } = useCart()
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [quantity, setQuantity] = useState(1)
+  const [addingToCart, setAddingToCart] = useState(false)
+  const [addToCartMessage, setAddToCartMessage] = useState(null)
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -45,15 +49,24 @@ function ProductDetail() {
     return 'http://localhost:8000/static/img/noimage.jpg'
   }
 
-  const handleAddToCart = (e) => {
+  const handleAddToCart = async (e) => {
     e.preventDefault()
-    // TODO: Реализовать добавление в корзину через API
-    // Пока заглушка - сохраняем логику Django
-    console.log('Add to cart:', {
-      productId: product.id,
-      quantity: quantity
-    })
-    alert(`Added ${quantity} item(s) to cart! (This is a placeholder)`)
+    if (!product || addingToCart) return
+
+    setAddingToCart(true)
+    setAddToCartMessage(null)
+
+    const result = await addItem(product.id, quantity, false)
+    
+    if (result.success) {
+      setAddToCartMessage(`Added ${quantity} item(s) to cart!`)
+      setTimeout(() => setAddToCartMessage(null), 3000)
+    } else {
+      setAddToCartMessage(result.error || 'Failed to add item to cart')
+      setTimeout(() => setAddToCartMessage(null), 3000)
+    }
+
+    setAddingToCart(false)
   }
 
   if (loading) {
@@ -136,8 +149,14 @@ function ProductDetail() {
           <input 
             type="submit" 
             className="add-to-cart-btn" 
-            value="Add to cart"
+            value={addingToCart ? 'Adding...' : 'Add to cart'}
+            disabled={addingToCart || !product.available}
           />
+          {addToCartMessage && (
+            <p className={addToCartMessage.includes('Added') ? 'cart-success-message' : 'cart-error-message'}>
+              {addToCartMessage}
+            </p>
+          )}
         </form>
         <div className="product-info">
           <p><strong>Available:</strong> {product.available ? 'Yes' : 'No'}</p>

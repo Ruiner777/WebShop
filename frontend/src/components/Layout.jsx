@@ -1,12 +1,13 @@
 import { Outlet, Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { usersAPI } from '../api'
+import { useCart } from '../contexts/CartContext'
 import './Layout.css'
 
 function Layout() {
+  const { cart } = useCart()
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [cartQuantity, setCartQuantity] = useState(0)
 
   useEffect(() => {
     // Проверяем, есть ли токен аутентификации
@@ -28,10 +29,6 @@ function Layout() {
     } else {
       setLoading(false)
     }
-
-    // TODO: Загрузить количество товаров в корзине через API
-    // Пока используем значение по умолчанию
-    setCartQuantity(0)
   }, [])
 
   return (
@@ -80,7 +77,7 @@ function Layout() {
                   <Link to="/user/login" className="m-2">LOGIN</Link>
                 )}
                 <p className="cart-quantity">
-                  {cartQuantity > 0 ? cartQuantity : 0}
+                  {cart.total_quantity > 0 ? cart.total_quantity : 0}
                 </p>
               </>
             )}

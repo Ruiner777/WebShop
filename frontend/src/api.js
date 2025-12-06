@@ -6,6 +6,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // Важно для работы с сессиями Django
 });
 
 // Интерцептор для добавления токена аутентификации
@@ -71,6 +72,24 @@ export const ordersAPI = {
 export const authAPI = {
   getToken: (username, password) => 
     api.post('/v1/auth-token/', { username, password }),
+};
+
+export const cartAPI = {
+  getCart: () => api.get('/v1/cart/'),
+  addItem: (productId, quantity = 1, overrideQuantity = false) => 
+    api.post('/v1/cart/add_item/', { 
+      product_id: productId, 
+      quantity, 
+      override_quantity: overrideQuantity 
+    }),
+  updateQuantity: (productId, quantity) => 
+    api.post('/v1/cart/update_quantity/', { 
+      product_id: productId, 
+      quantity 
+    }),
+  removeItem: (productId) => 
+    api.post('/v1/cart/remove_item/', { product_id: productId }),
+  getQuantity: () => api.get('/v1/cart/get_quantity/'),
 };
 
 export default api;

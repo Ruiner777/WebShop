@@ -1,0 +1,184 @@
+/* Cart Page Styles - сохранены все классы из Django-шаблона cart/cart.html */
+
+.cart {
+  flex-direction: column;
+}
+
+.cart-title {
+  margin-top: 60px;
+  margin-bottom: 30px;
+}
+
+.cart-cards {
+  max-height: 52vh;
+  width: 600px;
+  overflow-y: auto;
+}
+
+.cart-card {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  align-items: center;
+  width: 570px;
+  height: 150px;
+  border: 1px solid #00000042;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  background-image: url('http://localhost:8000/static/img/cfr2.png');
+  background-repeat: no-repeat;
+}
+
+.cart-card:nth-child(even) {
+  background-image: url('http://localhost:8000/static/img/cfr1.png');
+  background-repeat: no-repeat;
+}
+
+.cart-card-img img {
+  width: 125px;
+  height: 125px;
+  border: 1px solid #00000042;
+}
+
+.cart-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cart-card-name {
+  width: 180px;
+}
+
+.cart-card-name p {
+  margin: 0;
+  font-size: 16px;
+}
+
+.cart-card-q {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cart-card-q p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.cart-card-q .quantity-select {
+  padding: 5px;
+  border: 1px solid #00000042;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.cart-card-price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.cart-card-price .price {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.cart-discount {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.cart-discount .line {
+  opacity: 0.7;
+  text-decoration: line-through;
+  font-weight: 300;
+  margin: 0;
+}
+
+.cart-discount p:not(.line) {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.remove-btn {
+  background-color: #fff;
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 30px;
+  border: 1px solid #00000042;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: all 0.5s ease;
+  cursor: pointer;
+}
+
+.remove-btn:hover:not(:disabled) {
+  border: 1px solid #000;
+}
+
+.remove-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cart-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 180px;
+  height: 50px;
+  border: 1px solid #00000042;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: all 0.5s ease;
+  text-decoration: none;
+  color: #000;
+  background-color: #fff;
+}
+
+.cart-btn:hover {
+  border: 1px solid #000;
+}
+
+.total {
+  margin: 50px 0 25px 0;
+}
+
+.total h5 {
+  font-size: 18px;
+  margin: 0;
+  font-weight: 600;
+}
+
+.cart-buttons {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 50px;
+}
+
+.cart-loading,
+.cart-error,
+.cart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin-top: 100px;
+}
+
+.cart-empty p {
+  font-size: 20px;
+}
+
+.cart-error p {
+  color: #d32f2f;
+  font-size: 16px;
+}
+

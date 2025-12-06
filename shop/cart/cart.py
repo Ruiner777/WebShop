@@ -37,14 +37,23 @@ class Cart:
 
     def __iter__(self):
         product_ids = self.cart.keys()
-        products = Product.objects.filter(id__in=product_ids)
-        cart = self.cart.copy()
-        for product in products:
-            cart[str(product.id)]['product'] = product
-        for item in cart.values():
-            item['price'] = Decimal(item['price'])
-            item['total_price'] = item['price'] * item['quantity']
-            yield item
+        products = Product.objects.filter(id__in=product_ids, available=True)
+        product_dict = {str(product.id): product for product in products}
+        
+        for product_id, item in self.cart.items():
+            item = item.copy()
+            product = product_dict.get(product_id)
+            
+            if product:
+                item['product'] = product
+                # Оставляем price как строку (как в сессии) для сериализации
+                # Конвертируем только для вычисления total_price
+                price_str = item.get('price', '0')
+                price_decimal = Decimal(price_str)
+                # Оставляем price как строку, чтобы избежать проблем с Decimal в сериализации
+                item['price'] = price_str  # Строка для сериализации
+                item['total_price'] = float(price_decimal * item['quantity'])  # float для сериализации
+                yield item
 
         
     def __len__(self):
