@@ -1,6 +1,6 @@
 /* Используем те же стили, что и в App.css */
 .app-container {
-  max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
   padding: 2rem;
   min-height: 100vh;

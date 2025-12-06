@@ -5,7 +5,8 @@ from . import views
 app_name = 'main'
 
 urlpatterns = [
-    path('', views.popular_list, name='popular_list'),
+    # Закомментировано: мигрировано на React
+    # path('', views.popular_list, name='popular_list'),
     path('shop/', views.product_list, name='product_list'),
     path('shop/<slug:slug>/', views.product_detail,
          name='product_detail'),

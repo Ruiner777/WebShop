@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import Home from './pages/Home'
+import Layout from './components/Layout'
+import HomePage from './pages/HomePage'
 import PaymentCompleted from './pages/PaymentCompleted'
 import PaymentCanceled from './pages/PaymentCanceled'
 import OrderCreated from './pages/OrderCreated'
@@ -9,10 +10,12 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/payment/completed" element={<PaymentCompleted />} />
-        <Route path="/payment/canceled" element={<PaymentCanceled />} />
-        <Route path="/orders/created" element={<OrderCreated />} />
+        <Route path="/" element={<Layout />}>
+          <Route index element={<HomePage />} />
+          <Route path="payment/completed" element={<PaymentCompleted />} />
+          <Route path="payment/canceled" element={<PaymentCanceled />} />
+          <Route path="orders/created" element={<OrderCreated />} />
+        </Route>
       </Routes>
     </Router>
   )
