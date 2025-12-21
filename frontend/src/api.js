@@ -70,6 +70,23 @@ export const ordersAPI = {
 };
 
 export const authAPI = {
+  register: (data) => api.post('/v1/auth/register/', data),
+  login: (data) => api.post('/v1/auth/login/', data),
+  logout: () => api.post('/v1/auth/logout/'),
+  getProfile: () => api.get('/v1/auth/profile/'),
+  updateProfile: (data) => {
+    // Если data - FormData, не устанавливаем Content-Type, браузер установит его автоматически с boundary
+    if (data instanceof FormData) {
+      return api.put('/v1/auth/profile/', data)
+    }
+    return api.put('/v1/auth/profile/', data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+  },
+  changePassword: (data) => api.post('/v1/auth/password_change/', data),
+  // Для обратной совместимости
   getToken: (username, password) => 
     api.post('/v1/auth-token/', { username, password }),
 };
@@ -90,6 +107,7 @@ export const cartAPI = {
   removeItem: (productId) => 
     api.post('/v1/cart/remove_item/', { product_id: productId }),
   getQuantity: () => api.get('/v1/cart/get_quantity/'),
+  clear: () => api.post('/v1/cart/clear/'),
 };
 
 export default api;

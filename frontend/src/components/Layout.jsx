@@ -1,35 +1,15 @@
 import { Outlet, Link } from 'react-router-dom'
-import { useState, useEffect } from 'react'
-import { usersAPI } from '../api'
 import { useCart } from '../contexts/CartContext'
+import { useAuth } from '../contexts/AuthContext'
 import './Layout.css'
 
 function Layout() {
   const { cart } = useCart()
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    // Проверяем, есть ли токен аутентификации
-    const token = localStorage.getItem('authToken')
-    if (token) {
-      // Загружаем информацию о пользователе
-      usersAPI.getMe()
-        .then(response => {
-          setUser(response.data)
-        })
-        .catch(() => {
-          // Если токен недействителен, удаляем его
-          localStorage.removeItem('authToken')
-          setUser(null)
-        })
-        .finally(() => {
-          setLoading(false)
-        })
-    } else {
-      setLoading(false)
-    }
-  }, [])
+  const { user, loading, logout } = useAuth()
+  
+  const handleLogout = async () => {
+    await logout()
+  }
 
   return (
     <div className="layout">
@@ -43,6 +23,11 @@ function Layout() {
               <li>
                 <Link to="/shop" className="nav-a m-3">Shop</Link>
               </li>
+              {!loading && user && (
+                <li>
+                  <Link to="/orders" className="nav-a m-3">Orders</Link>
+                </li>
+              )}
             </ul>
           </nav>
           <div className="header-logo">
@@ -72,9 +57,31 @@ function Layout() {
             {!loading && (
               <>
                 {user ? (
-                  <Link to="/user/profile" className="m-2">PROFILE</Link>
+                  <>
+                    <Link to="/user/profile" className="m-2">PROFILE</Link>
+                    <button 
+                      onClick={handleLogout} 
+                      className="m-2 logout-btn"
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontFamily: 'inherit',
+                        fontSize: 'inherit',
+                        color: 'inherit',
+                        textDecoration: 'none',
+                        padding: 0,
+                        margin: '0 8px'
+                      }}
+                    >
+                      LOGOUT
+                    </button>
+                  </>
                 ) : (
-                  <Link to="/user/login" className="m-2">LOGIN</Link>
+                  <>
+                    <Link to="/user/login" className="m-2">LOGIN</Link>
+                    <Link to="/user/registration" className="m-2">REGISTER</Link>
+                  </>
                 )}
                 <p className="cart-quantity">
                   {cart.total_quantity > 0 ? cart.total_quantity : 0}

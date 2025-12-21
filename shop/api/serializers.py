@@ -62,6 +62,66 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
 
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    """Сериализатор для регистрации пользователя"""
+    password = serializers.CharField(write_only=True, min_length=8, style={'input_type': 'password'})
+    password2 = serializers.CharField(write_only=True, min_length=8, style={'input_type': 'password'}, label='Confirm Password')
+    
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'first_name', 'last_name', 'password', 'password2']
+    
+    def validate(self, attrs):
+        """Проверка совпадения паролей"""
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError({"password2": "Passwords don't match"})
+        return attrs
+    
+    def create(self, validated_data):
+        """Создание пользователя с хешированным паролем"""
+        validated_data.pop('password2')
+        password = validated_data.pop('password')
+        user = User(**validated_data)
+        user.set_password(password)
+        user.save()
+        return user
+
+
+class UserLoginSerializer(serializers.Serializer):
+    """Сериализатор для входа пользователя"""
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True, style={'input_type': 'password'})
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    """Сериализатор для профиля пользователя (обновление)"""
+    
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'first_name', 'last_name', 'image']
+        read_only_fields = ['username']  # Username не изменяется
+    
+    def validate_email(self, value):
+        """Проверка уникальности email"""
+        user = self.instance
+        if User.objects.filter(email=value).exclude(pk=user.pk).exists():
+            raise serializers.ValidationError("A user with that email already exists.")
+        return value
+
+
+class PasswordChangeSerializer(serializers.Serializer):
+    """Сериализатор для смены пароля"""
+    old_password = serializers.CharField(write_only=True, style={'input_type': 'password'})
+    new_password = serializers.CharField(write_only=True, min_length=8, style={'input_type': 'password'})
+    new_password2 = serializers.CharField(write_only=True, min_length=8, style={'input_type': 'password'}, label='Confirm New Password')
+    
+    def validate(self, attrs):
+        """Проверка совпадения новых паролей"""
+        if attrs['new_password'] != attrs['new_password2']:
+            raise serializers.ValidationError({"new_password2": "Passwords don't match"})
+        return attrs
+
+
 class OrderItemSerializer(serializers.ModelSerializer):
     """Сериализатор для модели OrderItem"""
     product = ProductSerializer(read_only=True)
@@ -79,9 +139,23 @@ class OrderItemSerializer(serializers.ModelSerializer):
             'quantity', 'cost'
         ]
     
+    def to_representation(self, instance):
+        """Конвертируем Decimal поля в float для JSON сериализации"""
+        data = super().to_representation(instance)
+        if 'price' in data and data['price'] is not None:
+            # price может быть Decimal или уже float
+            if isinstance(data['price'], str):
+                try:
+                    data['price'] = float(data['price'])
+                except (ValueError, TypeError):
+                    pass
+        return data
+    
     def get_cost(self, obj):
         """Вычисляет общую стоимость позиции"""
-        return obj.get_cost()
+        cost = obj.get_cost()
+        # Конвертируем Decimal в float для JSON сериализации
+        return float(cost) if isinstance(cost, Decimal) else cost
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -108,7 +182,9 @@ class OrderSerializer(serializers.ModelSerializer):
     
     def get_total_cost(self, obj):
         """Вычисляет общую стоимость заказа"""
-        return obj.get_total_cost()
+        total = obj.get_total_cost()
+        # Конвертируем Decimal в float для JSON сериализации
+        return float(total) if isinstance(total, Decimal) else total
 
 
 class CartItemSerializer(serializers.Serializer):

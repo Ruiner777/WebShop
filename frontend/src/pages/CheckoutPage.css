@@ -1,0 +1,175 @@
+/* Checkout Page Styles - сохранены все классы из Django-шаблона orders/order/create.html */
+
+.forcreate {
+  display: flex;
+  gap: 30px;
+  margin-top: 80px;
+  justify-content: center;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 20px;
+}
+
+.profile {
+  flex: 1;
+  max-width: 500px;
+}
+
+.profile h2 {
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.order-form {
+  margin-top: 20px;
+}
+
+.col-md-12 {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.mb-3 {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  padding: 10px 15px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #000;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.form-styleprofile {
+  font-family: "Carrois Gothic", sans-serif;
+}
+
+.order-form p {
+  margin-top: 20px;
+}
+
+.order-form input[type="submit"] {
+  width: 180px;
+  height: 50px;
+  border: 1px solid #00000027;
+  border-radius: 5px;
+  background-color: #fff;
+  font-size: 16px;
+  font-family: "Carrois Gothic", sans-serif;
+  cursor: pointer;
+  transition: all 0.4s ease;
+}
+
+.order-form input[type="submit"]:hover:not(:disabled) {
+  border: 1px solid #000;
+}
+
+.order-form input[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.checkout {
+  flex: 1;
+  max-width: 400px;
+}
+
+.checkout h1 {
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+.order-info {
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.order-info ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.order-info li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.order-info li:last-of-type {
+  border-bottom: none;
+}
+
+.order-info li p {
+  margin: 0;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.order-total {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid #000;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.checkout-loading,
+.checkout-empty,
+.checkout-error {
+  text-align: center;
+  padding: 3rem;
+  margin-top: 100px;
+}
+
+.checkout-error {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 5px;
+  color: #721c24;
+  margin: 20px 0;
+}
+
+.checkout-error p {
+  margin: 0;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+  .forcreate {
+    flex-direction: column;
+    padding: 0 15px;
+  }
+
+  .profile,
+  .checkout {
+    max-width: 100%;
+  }
+}
+

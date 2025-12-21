@@ -112,6 +112,23 @@ export const CartProvider = ({ children }) => {
     }
   }, [])
 
+  // Очистить корзину
+  const clearCart = useCallback(async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      await cartAPI.clear()
+      setCart({ items: [], total_price: '0.00', total_quantity: 0 })
+      return { success: true }
+    } catch (err) {
+      console.error('Ошибка при очистке корзины:', err)
+      setError(err.response?.data?.error || err.message)
+      return { success: false, error: err.response?.data?.error || err.message }
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
   // Загрузить корзину при монтировании
   useEffect(() => {
     fetchCart()
@@ -126,6 +143,7 @@ export const CartProvider = ({ children }) => {
     updateQuantity,
     removeItem,
     getQuantity,
+    clearCart,
   }
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>
