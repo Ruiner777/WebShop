@@ -1,11 +1,13 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCart } from '../contexts/CartContext'
+import { useAuth } from '../contexts/AuthContext'
 import { ordersAPI } from '../api'
 import './CheckoutPage.css'
 
 function CheckoutPage() {
   const { cart, loading: cartLoading, clearCart } = useCart()
+  const { user, loading: authLoading } = useAuth()
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
     first_name: '',
@@ -17,13 +19,45 @@ function CheckoutPage() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState(null)
+  const [isAutoFilled, setIsAutoFilled] = useState(false) // Флаг для отслеживания автозаполнения
 
+  // Функция для заполнения полей из профиля пользователя
+  const fillFromProfile = () => {
+    if (user) {
+      setFormData({
+        first_name: user.first_name || '',
+        last_name: user.last_name || '',
+        email: user.email || '',
+        city: user.city || '',
+        address: user.address || '',
+        postal_code: user.postal_code || '',
+      })
+      setIsAutoFilled(true)
+    }
+  }
+
+  // Автоматическое заполнение при загрузке компонента, если пользователь авторизован
+  useEffect(() => {
+    if (user && !authLoading) {
+      // Заполняем только если форма пустая (первая загрузка)
+      const isFormEmpty = !formData.first_name && !formData.last_name && !formData.email
+      if (isFormEmpty) {
+        fillFromProfile()
+      }
+    }
+  }, [user, authLoading]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Сброс флага автозаполнения при ручном изменении полей
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
       [name]: value
     }))
+    // Если пользователь начал редактировать, снимаем флаг автозаполнения
+    if (isAutoFilled) {
+      setIsAutoFilled(false)
+    }
   }
 
   const handleSubmit = async (e) => {
@@ -80,6 +114,36 @@ function CheckoutPage() {
     <div className="forcreate">
       <div className="profile bg-white p-4 mb-4 mx-2">
         <h2 className="mb-2">Create Order</h2>
+        {user && (
+          <div className="mb-3" style={{ 
+            padding: '10px', 
+            backgroundColor: '#e7f3ff', 
+            borderRadius: '5px',
+            fontSize: '0.9rem',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <span>
+              {isAutoFilled ? '✓ Данные взяты из вашего профиля. Вы можете изменить их при необходимости.' : 'Вы можете заполнить форму данными из профиля.'}
+            </span>
+            <button
+              type="button"
+              onClick={fillFromProfile}
+              style={{
+                padding: '5px 15px',
+                backgroundColor: '#007bff',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '0.9rem'
+              }}
+            >
+              Заполнить из профиля
+            </button>
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="order-form">
           <div className="col-md-12 mb-3">
             <label htmlFor="id_first_name" className="form-label">First Name</label>
@@ -92,6 +156,7 @@ function CheckoutPage() {
               value={formData.first_name}
               onChange={handleChange}
               required
+              style={isAutoFilled && formData.first_name ? { backgroundColor: '#f0f8ff' } : {}}
             />
           </div>
           <div className="col-md-12 mb-3">
@@ -105,6 +170,7 @@ function CheckoutPage() {
               value={formData.last_name}
               onChange={handleChange}
               required
+              style={isAutoFilled && formData.last_name ? { backgroundColor: '#f0f8ff' } : {}}
             />
           </div>
           <div className="col-md-12 mb-3">
@@ -118,6 +184,7 @@ function CheckoutPage() {
               value={formData.email}
               onChange={handleChange}
               required
+              style={isAutoFilled && formData.email ? { backgroundColor: '#f0f8ff' } : {}}
             />
           </div>
           <div className="col-md-12 mb-3">

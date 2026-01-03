@@ -37,13 +37,17 @@ function ProfilePage() {
 
   // Загружаем заказы
   useEffect(() => {
+    console.log('Fetching orders...');
     const fetchOrders = async () => {
       try {
         setOrdersLoading(true)
         const response = await ordersAPI.getAll()
-        setOrders(response.data)
+        console.log('Orders API response:', response.data);
+      console.log('Orders count:', response.data.results.length);
+      setOrders(response.data.results)
       } catch (err) {
         console.error('Ошибка при загрузке заказов:', err)
+        console.error('Failed to fetch orders:', err.response || err);
       } finally {
         setOrdersLoading(false)
       }

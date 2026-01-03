@@ -8,7 +8,8 @@ from .views import (
     OrderViewSet,
     OrderItemViewSet,
     CartViewSet,
-    AuthViewSet
+    AuthViewSet,
+    SearchViewSet # Добавляем SearchViewSet
 )
 
 # Создаем роутер и регистрируем ViewSets
@@ -20,6 +21,7 @@ router.register(r'orders', OrderViewSet, basename='order')
 router.register(r'order-items', OrderItemViewSet, basename='orderitem')
 router.register(r'cart', CartViewSet, basename='cart')
 router.register(r'auth', AuthViewSet, basename='auth')
+router.register(r'search', SearchViewSet, basename='search')
 
 urlpatterns = [
     path('auth-token/', obtain_auth_token, name='api_token_auth'),

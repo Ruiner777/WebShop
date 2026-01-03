@@ -51,7 +51,10 @@ export const productsAPI = {
   create: (data) => api.post('/v1/products/', data),
   update: (slug, data) => api.put(`/v1/products/${slug}/`, data),
   delete: (slug) => api.delete(`/v1/products/${slug}/`),
+  // Добавляем метод для автодополнения поиска
+  autocomplete: (query) => api.get(`/v1/search/autocomplete/?q=${query}`),
 };
+
 
 export const usersAPI = {
   getAll: () => api.get('/v1/users/'),
@@ -64,7 +67,24 @@ export const usersAPI = {
 export const ordersAPI = {
   getAll: () => api.get('/v1/orders/'),
   getById: (id) => api.get(`/v1/orders/${id}/`),
-  create: (data) => api.post('/v1/orders/', data),
+  create: (data) => {
+    // Простой способ получить CSRF токен
+    let csrfToken = '';
+    const cookies = document.cookie.split(';');
+    for (let cookie of cookies) {
+      cookie = cookie.trim();
+      if (cookie.startsWith('csrftoken=')) {
+        csrfToken = cookie.substring(10);
+        break;
+      }
+    }
+    
+    return api.post('/v1/orders/', data, {
+      headers: {
+        'X-CSRFToken': csrfToken
+      }
+    });
+  },
   update: (id, data) => api.put(`/v1/orders/${id}/`, data),
   delete: (id) => api.delete(`/v1/orders/${id}/`),
 };

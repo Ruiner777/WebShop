@@ -1,0 +1,154 @@
+/* Footer.css */
+
+.main-footer {
+  background-color: #2c3e50; /* Темный фон */
+  color: #ecf0f1; /* Светлый текст */
+  padding: 40px 0 20px;
+  font-size: 0.9rem;
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 колонки */
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.footer-column h3 {
+  color: #3498db; /* Пример акцентного цвета */
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.footer-column h3::after {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 2px;
+  background-color: #3498db;
+  margin-top: 10px;
+}
+
+.about-shop img {
+  height: 60px; /* Размер логотипа */
+  margin-bottom: 15px;
+  filter: brightness(0) invert(1); /* Делаем лого белым для темного фона */
+}
+
+.about-shop p {
+  line-height: 1.6;
+}
+
+.footer-column ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-column ul li {
+  margin-bottom: 10px;
+}
+
+.footer-column a {
+  color: #ecf0f1;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-column a:hover {
+  color: #3498db; /* Цвет при наведении */
+}
+
+.contact-info p {
+  margin-bottom: 10px;
+}
+
+.social-icons a {
+  color: #ecf0f1;
+  font-size: 1.5rem;
+  margin-right: 15px;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.social-icons a:hover {
+  color: #3498db;
+  transform: translateY(-3px);
+}
+
+.footer-bottom {
+  background-color: #233140; /* Чуть темнее, чем основной футер */
+  padding: 15px 0;
+  margin-top: 40px;
+  text-align: center;
+}
+
+.footer-bottom .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  flex-wrap: wrap; /* Для адаптивности */
+}
+
+.footer-bottom p {
+  margin: 0;
+}
+
+.footer-bottom .bottom-links a {
+  color: #ecf0f1;
+  text-decoration: none;
+  margin-left: 20px;
+  transition: color 0.3s ease;
+}
+
+.footer-bottom .bottom-links a:hover {
+  color: #3498db;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+  .footer-content {
+    grid-template-columns: 1fr; /* Одна колонка на мобильных */
+    text-align: center;
+  }
+
+  .footer-column {
+    margin-bottom: 30px;
+  }
+
+  .footer-column h3::after {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .about-shop img {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+  }
+
+  .social-icons a {
+    margin: 0;
+  }
+
+  .footer-bottom .container {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .footer-bottom .bottom-links a {
+    margin: 0 10px;
+  }
+}
+

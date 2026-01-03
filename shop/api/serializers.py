@@ -365,3 +365,8 @@ class CartSerializer(serializers.Serializer):
         return sum(item.get('quantity', 0) if isinstance(item, dict) else getattr(item, 'quantity', 0) for item in obj)
 
 
+class SearchProductSerializer(serializers.ModelSerializer):
+    """Сериализатор для автодополнения поиска (только id, name, slug)"""
+    class Meta:
+        model = Product
+        fields = ['id', 'name', 'slug']

@@ -1,0 +1,175 @@
+/* Header.css */
+
+.main-header {
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.top-header {
+  display: flex;
+  justify-content: space-between; /* Распределяем элементы по краям */
+  align-items: center;
+  padding: 5px; /* Уменьшен padding для компактного хедера */
+}
+
+.header-left {
+  flex: 1; /* Занимает доступное пространство слева */
+  text-align: left;
+}
+
+.header-left .nav-shop-link {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  text-decoration: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.header-left .nav-shop-link:hover {
+  background-color: #f0f0f0;
+  color: #007bff;
+}
+
+.header-logo-center {
+  flex: 1; /* Занимает доступное пространство в центре */
+  text-align: center;
+}
+
+.header-logo-center img {
+  height: 100px; /* Увеличен в 2.5 раза (было 60px) */
+  transition: transform 0.3s ease;
+}
+
+.header-logo-center img:hover {
+  transform: scale(1.05);
+}
+
+.header-right {
+  flex: 1; /* Занимает доступное пространство справа */
+  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 20px;
+}
+
+.cart-icon-wrapper {
+  position: relative;
+  font-size: 1.5rem;
+  color: #333;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.cart-icon-wrapper:hover {
+  color: #007bff;
+  transform: scale(1.1);
+}
+
+.cart-icon-wrapper i {
+  font-size: 1.5rem;
+  color: inherit;
+}
+
+.user-icon {
+  position: relative;
+  font-size: 1.5rem;
+  color: #333;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.user-icon:hover {
+  color: #007bff;
+  transform: scale(1.1);
+}
+
+.cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -12px;
+  background-color: #dc3545; /* Красный цвет для бейджа */
+  color: white;
+  border-radius: 50%;
+  padding: 2px 7px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-dropdown-wrapper {
+  position: relative;
+}
+
+.user-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  list-style: none;
+  padding: 10px 0;
+  margin: 0;
+  min-width: 150px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1001;
+}
+
+.user-dropdown-menu li {
+  padding: 0 15px;
+}
+
+.user-dropdown-menu a,
+.user-dropdown-menu button {
+  display: block;
+  width: 100%;
+  padding: 8px 0;
+  color: #333;
+  text-decoration: none;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.user-dropdown-menu a:hover,
+.user-dropdown-menu button:hover {
+  background-color: #f0f0f0;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+  .top-header {
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 5px 10px; /* Уменьшен padding для мобильных */
+  }
+
+  .header-left, 
+  .header-logo-center, 
+  .header-right {
+    flex: none; /* Отключаем flex-grow на мобильных */
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .header-right {
+    justify-content: center; /* Центрируем иконки на мобильных */
+  }
+
+  .header-logo-center img {
+    height: 80px; /* Увеличенный логотип для мобильных устройств */
+  }
+}

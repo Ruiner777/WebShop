@@ -1,0 +1,98 @@
+.search-bar-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 400px; /* Ограничиваем ширину для лучшего внешнего вида */
+  margin-left: 20px; /* Отступ от логотипа */
+}
+
+.search-input-wrapper {
+  display: flex;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.search-input {
+  flex-grow: 1;
+  padding: 8px 15px;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+}
+
+.search-button {
+  background-color: #f0f0f0;
+  border: none;
+  padding: 8px 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+.search-button:hover {
+  background-color: #e0e0e0;
+}
+
+.search-button i {
+  color: #555;
+  font-size: 1.1rem;
+}
+
+.suggestions-dropdown {
+  position: absolute;
+  top: 100%; /* Показываем под полем ввода */
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.suggestion-item {
+  padding: 10px 15px;
+  cursor: pointer;
+  color: #333;
+}
+
+.suggestion-item:hover {
+  background-color: #f0f0f0;
+}
+
+.header-search-bar {
+  flex-grow: 1; /* Чтобы занимал доступное пространство */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Дополнительные стили для header-container, если нужно выровнять */
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px; /* Добавляем отступы по бокам */
+}
+
+.header-logo {
+  margin-right: 20px; /* Отступ между логотипом и SearchBar */
+}
+
+.header-profile {
+  display: flex;
+  align-items: center; /* Выравнивание по центру */
+}
+

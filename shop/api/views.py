@@ -23,8 +23,11 @@ from .serializers import (
     UserRegistrationSerializer,
     UserLoginSerializer,
     UserProfileSerializer,
-    PasswordChangeSerializer
+    PasswordChangeSerializer,
+    SearchProductSerializer # Добавляем новый сериализатор
 )
+
+from django.db.models import Q # Добавляем Q для сложных запросов
 
 
 class CsrfExemptSessionAuthentication(SessionAuthentication):
@@ -127,7 +130,30 @@ class OrderViewSet(viewsets.ModelViewSet):
             return Order.objects.none()
         if user.is_staff:
             return Order.objects.all()
-        return Order.objects.filter(user=user)
+
+        # Получаем заказы пользователя
+        orders = Order.objects.filter(user=user)
+
+        # Если у пользователя нет привязанных заказов, но есть заказы с его email,
+        # автоматически привязываем их
+        if not orders.exists():
+            email_orders = Order.objects.filter(
+                user__isnull=True,
+                email=user.email
+            )
+            if email_orders.exists():
+                # Привязываем заказы к пользователю
+                email_orders.update(user=user)
+                orders = Order.objects.filter(user=user)
+
+        return orders
+
+    def perform_create(self, serializer):
+        """Привязываем пользователя к заказу при создании"""
+        if self.request.user.is_authenticated:
+            serializer.save(user=self.request.user)
+        else:
+            serializer.save()
     
     def create(self, request, *args, **kwargs):
         """
@@ -324,6 +350,75 @@ class CartViewSet(ViewSet):
         cart = Cart(request)
         cart.clear()
         return Response({'message': 'Cart cleared'}, status=status.HTTP_200_OK)
+
+
+class SearchViewSet(viewsets.ViewSet):
+    """
+    ViewSet для поиска продуктов.
+    Предоставляет эндпоинты: search (полный поиск) и autocomplete (быстрые подсказки).
+    """
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        """Базовый queryset для продуктов, который может быть расширен фильтрами"""
+        return Product.objects.filter(available=True)
+
+    @action(detail=False, methods=['get'])
+    def search(self, request):
+        """Полный поиск продуктов с фильтрами по имени, описанию, категории, цене и доступности."""
+        queryset = self.get_queryset()
+        query = request.query_params.get('q', None)
+        category_slug = request.query_params.get('category', None)
+        min_price = request.query_params.get('min_price', None)
+        max_price = request.query_params.get('max_price', None)
+        available = request.query_params.get('available', None)
+
+        if query:
+            queryset = queryset.filter(
+                Q(name__icontains=query) |
+                Q(description__icontains=query) |
+                Q(category__name__icontains=query)
+            )
+
+        if category_slug:
+            queryset = queryset.filter(category__slug=category_slug)
+
+        if min_price:
+            try:
+                min_price = float(min_price)
+                queryset = queryset.filter(price__gte=min_price)
+            except ValueError:
+                return Response({'error': 'min_price must be a valid number'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if max_price:
+            try:
+                max_price = float(max_price)
+                queryset = queryset.filter(price__lte=max_price)
+            except ValueError:
+                return Response({'error': 'max_price must be a valid number'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if available is not None:
+            available_bool = available.lower() == 'true'
+            queryset = queryset.filter(available=available_bool)
+        
+        # Применяем пагинацию, если она нужна
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = ProductSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = ProductSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def autocomplete(self, request):
+        """Возвращает id, name, slug для быстрого автодополнения поиска по имени продукта."""
+        query = request.query_params.get('q', None)
+        if query:
+            queryset = Product.objects.filter(name__icontains=query, available=True)[:10] # Ограничиваем до 10 подсказок
+            serializer = SearchProductSerializer(queryset, many=True)
+            return Response(serializer.data)
+        return Response([])
 
 
 class AuthViewSet(ViewSet):
