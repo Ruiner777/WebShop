@@ -17,6 +17,9 @@ function ProfilePage() {
     last_name: '',
     username: '',
     email: '',
+    address: '',
+    postal_code: '',
+    city: '',
     image: null,
   })
   const [imagePreview, setImagePreview] = useState(null)
@@ -64,6 +67,9 @@ function ProfilePage() {
         last_name: user.last_name || '',
         username: user.username || '',
         email: user.email || '',
+        address: user.address || '',
+        postal_code: user.postal_code || '',
+        city: user.city || '',
         image: null,
       })
       if (user.image) {
@@ -115,6 +121,9 @@ function ProfilePage() {
       formDataToSend.append('first_name', formData.first_name)
       formDataToSend.append('last_name', formData.last_name)
       formDataToSend.append('email', formData.email)
+      formDataToSend.append('address', formData.address)
+      formDataToSend.append('postal_code', formData.postal_code)
+      formDataToSend.append('city', formData.city)
       if (formData.image) {
         formDataToSend.append('image', formData.image)
       }
@@ -290,6 +299,45 @@ function ProfilePage() {
                   value={formData.email}
                   onChange={handleInputChange}
                   required
+                  disabled={isSubmitting}
+                />
+              </div>
+              <div className="col-md-12 mb-3">
+                <label htmlFor="id_address" className="form-label">Address</label>
+                <input
+                  type="text"
+                  className="form-control form-styleprofile"
+                  id="id_address"
+                  name="address"
+                  placeholder="Your Address"
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  disabled={isSubmitting}
+                />
+              </div>
+              <div className="col-md-12 mb-3">
+                <label htmlFor="id_postal_code" className="form-label">Postal Code</label>
+                <input
+                  type="text"
+                  className="form-control form-styleprofile"
+                  id="id_postal_code"
+                  name="postal_code"
+                  placeholder="Your Postal Code"
+                  value={formData.postal_code}
+                  onChange={handleInputChange}
+                  disabled={isSubmitting}
+                />
+              </div>
+              <div className="col-md-12 mb-3">
+                <label htmlFor="id_city" className="form-label">City</label>
+                <input
+                  type="text"
+                  className="form-control form-styleprofile"
+                  id="id_city"
+                  name="city"
+                  placeholder="Your City"
+                  value={formData.city}
+                  onChange={handleInputChange}
                   disabled={isSubmitting}
                 />
               </div>

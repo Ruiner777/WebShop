@@ -54,7 +54,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'id', 'username', 'email', 'first_name', 'last_name',
-            'image', 'date_joined', 'is_staff', 'is_active'
+            'image', 'address', 'postal_code', 'city', 'date_joined', 'is_staff', 'is_active'
         ]
         read_only_fields = ['id', 'date_joined', 'is_staff', 'is_active']
         extra_kwargs = {
@@ -98,7 +98,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'image']
+        fields = ['username', 'email', 'first_name', 'last_name', 'image', 'address', 'postal_code', 'city']
         read_only_fields = ['username']  # Username не изменяется
     
     def validate_email(self, value):
