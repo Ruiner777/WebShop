@@ -154,6 +154,28 @@
   border-color: #333;
 }
 
+.btn-success {
+  background-color: #28a745;
+  color: #fff;
+  border-color: #28a745;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+  border-color: #1e7e34;
+}
+
+.btn-success:disabled {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.payment-btn {
+  font-weight: 600;
+  padding: 14px 28px;
+}
+
 .order-detail-loading,
 .order-detail-error {
   text-align: center;
@@ -163,6 +185,25 @@
 
 .order-detail-error {
   color: #dc3545;
+}
+
+.payment-message {
+  padding: 15px 20px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.payment-message.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.payment-message.warning {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
 }
 
 /* Адаптивность для мобильных устройств */

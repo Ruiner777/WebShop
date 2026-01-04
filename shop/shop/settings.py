@@ -14,7 +14,24 @@ from dotenv import load_dotenv
 from pathlib import Path
 
 
-load_dotenv()
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# BASE_DIR должен указывать на папку shop/ (где находится settings.py)
+BASE_DIR = Path(__file__).resolve().parent
+
+# Загружаем .env файл из папки shop/
+env_path = BASE_DIR / '.env'
+if env_path.exists():
+    load_dotenv(env_path)
+    print(f"DEBUG: .env loaded from: {env_path}")
+else:
+    print(f"DEBUG: .env not found at: {env_path}")
+    # Попробуем загрузить из родительской папки
+    parent_env = BASE_DIR.parent / '.env'
+    if parent_env.exists():
+        load_dotenv(parent_env)
+        print(f"DEBUG: .env loaded from parent: {parent_env}")
+    else:
+        print("DEBUG: .env not found in any location")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

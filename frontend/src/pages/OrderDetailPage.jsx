@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react'
-import { useParams, Link, useNavigate } from 'react-router-dom'
-import { ordersAPI } from '../api'
+import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { ordersAPI, paymentAPI } from '../api'
 import './OrderDetailPage.css'
 
 function OrderDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [order, setOrder] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [paymentProcessing, setPaymentProcessing] = useState(false)
+  const [paymentMessage, setPaymentMessage] = useState(null)
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -33,6 +36,48 @@ function OrderDetailPage() {
     }
   }, [id, navigate])
 
+  // Обработка параметров URL (редирект от Stripe)
+  useEffect(() => {
+    const paid = searchParams.get('paid')
+    const canceled = searchParams.get('canceled')
+
+    if (paid === 'true') {
+      setPaymentMessage({
+        type: 'success',
+        text: 'Payment was successful! Your order has been paid.'
+      })
+
+      // Резервный механизм: обновить статус заказа через API
+      const updateOrderStatus = async () => {
+        try {
+          console.log('🔄 REACT: Calling markPaid API for order:', id)
+          const response = await ordersAPI.markPaid(id)
+          console.log('✅ REACT: Order status updated via API:', response)
+        } catch (error) {
+          console.error('❌ REACT: Failed to update order status:', error)
+          console.error('❌ REACT: Error details:', error.response?.data || error.message)
+        }
+      }
+
+      updateOrderStatus()
+
+      // Обновить локальный статус заказа
+      if (order && !order.paid) {
+        setOrder(prevOrder => ({ ...prevOrder, paid: true }))
+      }
+
+      // Очистить URL параметры
+      navigate(`/orders/${id}`, { replace: true })
+    } else if (canceled === 'true') {
+      setPaymentMessage({
+        type: 'warning',
+        text: 'Payment was canceled. You can try again.'
+      })
+      // Очистить URL параметры
+      navigate(`/orders/${id}`, { replace: true })
+    }
+  }, [searchParams, navigate, id, order])
+
   const formatDate = (dateString) => {
     if (!dateString) return ''
     const date = new Date(dateString)
@@ -43,6 +88,22 @@ function OrderDetailPage() {
       hour: '2-digit',
       minute: '2-digit'
     })
+  }
+
+  const handlePayment = async () => {
+    if (!order || order.paid) return
+
+    setPaymentProcessing(true)
+    try {
+      const response = await paymentAPI.createCheckoutSession(order.id)
+      // Перенаправление на Stripe Checkout
+      window.location.href = response.data.url
+    } catch (err) {
+      console.error('Ошибка при создании платежной сессии:', err)
+      alert('Ошибка при создании платежа. Попробуйте снова.')
+    } finally {
+      setPaymentProcessing(false)
+    }
   }
 
   if (loading) {
@@ -66,7 +127,13 @@ function OrderDetailPage() {
     <div className="order-detail-container">
       <div className="order-detail-content">
         <h1 className="order-detail-title">Order № {order.id}</h1>
-        
+
+        {paymentMessage && (
+          <div className={`payment-message ${paymentMessage.type}`}>
+            <p>{paymentMessage.text}</p>
+          </div>
+        )}
+
         <div className="order-info-section">
           <h2>Order Information</h2>
           <div className="order-info-row">
@@ -137,6 +204,15 @@ function OrderDetailPage() {
         </div>
 
         <div className="order-detail-actions">
+          {!order.paid && (
+            <button
+              onClick={handlePayment}
+              disabled={paymentProcessing}
+              className="btn btn-success payment-btn"
+            >
+              {paymentProcessing ? 'Processing...' : 'Pay Now'}
+            </button>
+          )}
           <Link to="/orders" className="btn btn-secondary">Back to Orders</Link>
           <Link to="/shop" className="btn btn-primary">Continue Shopping</Link>
         </div>

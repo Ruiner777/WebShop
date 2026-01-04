@@ -9,7 +9,8 @@ from .views import (
     OrderItemViewSet,
     CartViewSet,
     AuthViewSet,
-    SearchViewSet # Добавляем SearchViewSet
+    SearchViewSet, # Добавляем SearchViewSet
+    PaymentViewSet
 )
 
 # Создаем роутер и регистрируем ViewSets
@@ -25,6 +26,7 @@ router.register(r'search', SearchViewSet, basename='search')
 
 urlpatterns = [
     path('auth-token/', obtain_auth_token, name='api_token_auth'),
+    path('payment/create-checkout-session/<int:order_id>/', PaymentViewSet.as_view({'post': 'create_checkout_session'}), name='create_checkout_session'),
     path('', include(router.urls)),
 ]
 

@@ -17,9 +17,15 @@ class Order(models.Model):
     paid = models.BooleanField(default=False)
 
     stripe_id = models.CharField(
-        max_length=250, 
-        blank=True, 
+        max_length=250,
+        blank=True,
         help_text="ID платежа в Stripe"
+    )
+
+    stripe_session_id = models.CharField(
+        max_length=250,
+        blank=True,
+        help_text="ID сессии Stripe Checkout"
     )
 
 

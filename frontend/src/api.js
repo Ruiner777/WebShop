@@ -6,16 +6,25 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // Важно для работы с сессиями Django
+  withCredentials: true, // Важно для работы с сессиями Django и CSRF токенами
 });
 
-// Интерцептор для добавления токена аутентификации
+// Интерцептор для добавления токена аутентификации и CSRF
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('authToken');
     if (token) {
       config.headers.Authorization = `Token ${token}`;
     }
+
+    // Добавляем CSRF токен для POST, PUT, DELETE запросов
+    if (['post', 'put', 'delete', 'patch'].includes(config.method?.toLowerCase())) {
+      const csrfToken = getCSRFToken();
+      if (csrfToken) {
+        config.headers['X-CSRFToken'] = csrfToken;
+      }
+    }
+
     return config;
   },
   (error) => {
@@ -78,7 +87,7 @@ export const ordersAPI = {
         break;
       }
     }
-    
+
     return api.post('/v1/orders/', data, {
       headers: {
         'X-CSRFToken': csrfToken
@@ -87,6 +96,43 @@ export const ordersAPI = {
   },
   update: (id, data) => api.put(`/v1/orders/${id}/`, data),
   delete: (id) => api.delete(`/v1/orders/${id}/`),
+  markPaid: (id) => {
+    const csrfToken = getCSRFToken();
+    return api.post(`/v1/orders/${id}/mark_paid/`, {}, {
+      headers: {
+        'X-CSRFToken': csrfToken
+      }
+    });
+  },
+};
+
+// Функция для получения CSRF токена из куки
+function getCSRFToken() {
+  const name = 'csrftoken';
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+export const paymentAPI = {
+  createCheckoutSession: (orderId) => {
+    const csrfToken = getCSRFToken();
+
+    return api.post(`/v1/payment/create-checkout-session/${orderId}/`, {}, {
+      headers: {
+        'X-CSRFToken': csrfToken,
+      },
+    });
+  },
 };
 
 export const authAPI = {

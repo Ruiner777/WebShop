@@ -1,17 +1,29 @@
+from django.conf import settings
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.authentication import SessionAuthentication
+
+
+class CsrfExemptSessionAuthentication(SessionAuthentication):
+    """
+    Кастомный класс аутентификации для отключения CSRF проверки в API endpoints.
+    Используется для API endpoints, где CSRF токен не требуется (например, платежи).
+    """
+    def enforce_csrf(self, request):
+        return  # Отключить CSRF проверку
 from rest_framework.viewsets import ViewSet
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from decimal import Decimal
 from main.models import Category, Product
 from users.models import User
 from orders.models import Order, OrderItem
 from cart.cart import Cart
+import stripe
 from .serializers import (
     CategorySerializer,
     ProductSerializer,
@@ -207,6 +219,28 @@ class OrderViewSet(viewsets.ModelViewSet):
             status=status.HTTP_201_CREATED,
             headers=headers
         )
+
+    @action(detail=True, methods=['post'])
+    def mark_paid(self, request, pk=None):
+        """Ручное обновление статуса заказа как оплаченного"""
+        order = self.get_object()
+
+        # Проверяем, что заказ принадлежит пользователю
+        if order.user != request.user:
+            return Response(
+                {'error': 'Not authorized to modify this order'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        # Обновляем статус
+        order.paid = True
+        order.save()
+
+        return Response({
+            'status': 'success',
+            'message': f'Order {order.id} marked as paid',
+            'order': OrderSerializer(order).data
+        })
 
 
 class OrderItemViewSet(viewsets.ModelViewSet):
@@ -540,8 +574,137 @@ class AuthViewSet(ViewSet):
             # Устанавливаем новый пароль
             user.set_password(new_password)
             user.save()
-            
+
             return Response({'message': 'Password changed successfully'}, status=status.HTTP_200_OK)
-        
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PaymentViewSet(viewsets.ViewSet):
+    """ViewSet для обработки платежей через Stripe"""
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def create_checkout_session(self, request, order_id=None):
+        """Создание Stripe Checkout Session для оплаты заказа"""
+        print(f"🔍 DEBUG: create_checkout_session called with order_id={order_id}")
+
+        # Проверяем аутентификацию
+        if not request.user.is_authenticated:
+            print("❌ DEBUG: User not authenticated")
+            return Response(
+                {'error': 'Authentication required'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        print(f"✅ DEBUG: User authenticated: {request.user.username}")
+
+        # Проверяем заказ
+        try:
+            order = Order.objects.get(id=order_id, user=request.user)
+            print(f"✅ DEBUG: Order found: {order.id}, paid={order.paid}")
+        except Order.DoesNotExist:
+            print(f"❌ DEBUG: Order {order_id} not found for user {request.user.username}")
+            return Response(
+                {'error': 'Order not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        if order.paid:
+            print("❌ DEBUG: Order already paid")
+            return Response(
+                {'error': 'Order already paid'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Создаем success и cancel URLs - редирект на React (localhost:3000)
+        success_url = f'http://localhost:3000/orders/{order.id}?paid=true'
+        cancel_url = f'http://localhost:3000/orders/{order.id}?canceled=true'
+        print(f"🔗 DEBUG: Success URL: {success_url}")
+        print(f"🔗 DEBUG: Cancel URL: {cancel_url}")
+
+        # Проверяем Stripe ключи
+        stripe_secret = getattr(settings, 'STRIPE_SECRET_KEY', None)
+        print(f"🔑 DEBUG: STRIPE_SECRET_KEY loaded: {bool(stripe_secret)}")
+        if not stripe_secret or stripe_secret == 'sk_test_YOUR_SECRET_KEY_HERE':
+            print("❌ DEBUG: Stripe secret key not configured or is placeholder")
+            return Response(
+                {'error': 'Stripe not configured. Please check STRIPE_SECRET_KEY in .env'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+        try:
+            # Создаем Stripe Checkout Session
+            print("🛠️  DEBUG: Creating Stripe checkout session...")
+            session_data = {
+                'mode': 'payment',
+                'client_reference_id': str(order.id),
+                'success_url': success_url,
+                'cancel_url': cancel_url,
+                'line_items': []
+            }
+
+            print(f"📦 DEBUG: Order has {order.items.count()} items")
+            for item in order.items.all():
+                discounted_price = item.product.sell_price()
+                print(f"   - {item.product.name}: ${discounted_price} x {item.quantity}")
+                session_data['line_items'].append({
+                    'price_data': {
+                        'unit_amount': int(discounted_price * Decimal('100')),
+                        'currency': 'usd',
+                        'product_data': {
+                            'name': item.product.name,
+                        },
+                    },
+                    'quantity': item.quantity,
+                })
+
+            session = stripe.checkout.Session.create(**session_data)
+            print(f"✅ DEBUG: Stripe session created: {session.id}")
+
+            # Сохранить session.id в заказе для webhook
+            print(f"💾 DEBUG: Before save - order.stripe_session_id: {order.stripe_session_id}")
+            order.stripe_session_id = session.id
+            print(f"💾 DEBUG: Setting stripe_session_id to: {session.id}")
+            order.save()
+            print(f"💾 DEBUG: After save - order.stripe_session_id: {order.stripe_session_id}")
+            print(f"✅ DEBUG: Session ID saved to order {order.id}")
+
+            return Response({
+                'session_id': session.id,
+                'url': session.url
+            }, status=status.HTTP_200_OK)
+
+        except stripe.error.StripeError as e:
+            print(f"❌ DEBUG: Stripe API error: {e}")
+            return Response(
+                {'error': f'Stripe error: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        except Exception as e:
+            print(f"❌ DEBUG: Unexpected error: {e}")
+            import traceback
+            traceback.print_exc()
+            return Response(
+                {'error': f'Payment session creation failed: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+    @action(detail=True, methods=['post'])
+    def mark_paid(self, request, pk=None):
+        """Ручное обновление статуса заказа как оплаченного"""
+        try:
+            order = Order.objects.get(id=pk, user=request.user)
+        except Order.DoesNotExist:
+            return Response(
+                {'error': 'Order not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        order.paid = True
+        order.save()
+
+        return Response({
+            'message': 'Order marked as paid',
+            'order': OrderSerializer(order).data
+        }, status=status.HTTP_200_OK)
 
