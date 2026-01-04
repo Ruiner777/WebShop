@@ -16,7 +16,7 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 # BASE_DIR должен указывать на папку shop/ (где находится settings.py)
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Загружаем .env файл из папки shop/
 env_path = BASE_DIR / '.env'
@@ -27,10 +27,6 @@ else:
     parent_env = BASE_DIR.parent / '.env'
     if parent_env.exists():
         load_dotenv(parent_env)
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-#BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
