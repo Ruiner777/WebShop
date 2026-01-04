@@ -41,12 +41,13 @@
 }
 
 .header-logo-center img {
-  height: 100px; /* Увеличен в 2.5 раза (было 60px) */
+  height: 40px; /* Увеличен в 2.5 раза (было 60px) */
   transition: transform 0.3s ease;
+  transform: scale(2.75)
 }
 
 .header-logo-center img:hover {
-  transform: scale(1.05);
+  transform: scale(3.5);
 }
 
 .header-right {

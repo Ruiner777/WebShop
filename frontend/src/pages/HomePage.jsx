@@ -62,6 +62,8 @@ function HomePage() {
   return (
     <section className="home d-flex flex-column">
       <div className="home-title d-flex flex-column align-items-center">
+        <h1 className="home-welcome">Welcome to WebShop</h1>
+        <p className="home-description">Discover unique accessories and fashion items for every style</p>
         <Link to="/shop" className="home-btn mt-4">ALL PRODUCTS</Link>
       </div>
       <div className="home-recomendation">

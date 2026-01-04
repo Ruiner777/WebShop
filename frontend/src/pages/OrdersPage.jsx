@@ -14,7 +14,7 @@ function OrdersPage() {
         setLoading(true)
         setError(null)
         const response = await ordersAPI.getAll()
-        setOrders(response.data)
+        setOrders(response.data.results || response.data)
       } catch (err) {
         console.error('Ошибка при загрузке заказов:', err)
         if (err.response?.status === 401) {
@@ -68,15 +68,13 @@ function OrdersPage() {
           <div className="orderss">
             {orders.map((order) => (
               <div key={order.id} className="order-cart">
-                <div className="order-header">
-                  <h5 className="order-title">Order № {order.id}</h5>
-                  <div className="order-meta">
-                    <span className={`order-status ${order.paid ? 'paid' : 'unpaid'}`}>
-                      {order.paid ? 'Paid' : 'Unpaid'}
-                    </span>
-                    <span className="order-date">{formatDate(order.created)}</span>
-                    <span className="order-total">Total: $ {order.total_cost?.toFixed(2) || '0.00'}</span>
-                  </div>
+                <h5 className="order-title">Order № {order.id}</h5>
+                <div className="order-meta">
+                  <span className={`order-status ${order.paid ? 'paid' : 'unpaid'}`}>
+                    {order.paid ? 'Paid' : 'Unpaid'}
+                  </span>
+                  <span className="order-date">{formatDate(order.created)}</span>
+                  <span className="order-total">Total: $ {order.total_cost?.toFixed(2) || '0.00'}</span>
                 </div>
                 <div className="order-desc">
                   {order.items && order.items.length > 0 ? (
@@ -84,20 +82,13 @@ function OrdersPage() {
                       const product = item.product
                       return (
                         <div key={item.id} className="orders-carts">
-                          <div className="order-item-info">
-                            <span className="dadad">Name: </span>
-                            <Link to={`/shop/${product?.slug}`} className="order-item-link">
-                              {product?.name || 'Product removed'}
-                            </Link>
-                          </div>
-                          <div className="order-item-info">
-                            <span className="dadad">Quantity: </span>
-                            <span>{item.quantity}</span>
-                          </div>
-                          <div className="order-item-info">
-                            <span className="dadad">Price: </span>
-                            <span>$ {item.price?.toFixed(2) || '0.00'}</span>
-                          </div>
+                          <span className="dadad">Name: </span>
+                          <Link to={`/shop/${product?.slug}`} className="order-item-link">
+                            {product?.name || 'Product removed'}
+                          </Link>
+                          <br />
+                          <span className="dadad">Quantity: </span> {item.quantity},
+                          <span className="dadad"> Price: $ {item.price?.toFixed(2) || '0.00'}</span>
                         </div>
                       )
                     })

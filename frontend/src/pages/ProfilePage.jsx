@@ -1,14 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { ordersAPI } from '../api'
 import './ProfilePage.css'
 
 function ProfilePage() {
   const { user, updateProfile, changePassword } = useAuth()
-  const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
-  const [ordersLoading, setOrdersLoading] = useState(true)
   const [error, setError] = useState(null)
   
   // Форма профиля
@@ -37,27 +34,6 @@ function ProfilePage() {
   const [passwordError, setPasswordError] = useState(null)
   const [passwordSuccess, setPasswordSuccess] = useState(null)
   const [isChangingPassword, setIsChangingPassword] = useState(false)
-
-  // Загружаем заказы
-  useEffect(() => {
-    console.log('Fetching orders...');
-    const fetchOrders = async () => {
-      try {
-        setOrdersLoading(true)
-        const response = await ordersAPI.getAll()
-        console.log('Orders API response:', response.data);
-      console.log('Orders count:', response.data.results.length);
-      setOrders(response.data.results)
-      } catch (err) {
-        console.error('Ошибка при загрузке заказов:', err)
-        console.error('Failed to fetch orders:', err.response || err);
-      } finally {
-        setOrdersLoading(false)
-      }
-    }
-
-    fetchOrders()
-  }, [])
 
   // Заполняем форму при загрузке пользователя
   useEffect(() => {
@@ -188,18 +164,6 @@ function ProfilePage() {
     } finally {
       setIsChangingPassword(false)
     }
-  }
-
-  const formatDate = (dateString) => {
-    if (!dateString) return ''
-    const date = new Date(dateString)
-    return date.toLocaleString('ru-RU', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
   }
 
   if (loading) {
@@ -425,49 +389,12 @@ function ProfilePage() {
           </div>
         )}
 
-        <div className="orders">
+        <div className="orders-link">
           <h2 className="mb-2">Your Orders</h2>
-          {ordersLoading ? (
-            <p>Загрузка заказов...</p>
-          ) : orders && orders.length > 0 ? (
-            <div className="orderss">
-              {orders.map((order) => (
-                <div key={order.id} className="order-cart">
-                  <h5 className="order-title">Order № {order.id}</h5>
-                  <p className="order-desc">
-                    {order.items && order.items.length > 0 ? (
-                      order.items.map((item) => {
-                        const product = item.product
-                        return (
-                          <div key={item.id} className="orders-carts">
-                            <span className="dadad">Name: </span>
-                            <Link to={`/shop/${product?.slug}`} className="order-item-link">
-                              {product?.name || 'Product removed'}
-                            </Link>
-                            <br />
-                            <span className="dadad">Quantity: </span> {item.quantity},
-                            <span className="dadad"> Price: $ {item.price?.toFixed(2) || '0.00'}</span>
-                            <br />
-                            <span className="dadad">Date:</span> {formatDate(order.created)}
-                            <br />
-                          </div>
-                        )
-                      })
-                    ) : (
-                      <p>No items in this order</p>
-                    )}
-                  </p>
-                  <div className="order-actions">
-                    <Link to={`/orders/${order.id}`} className="btn btn-primary">
-                      View Details
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <h4 className="notorders">You haven't ordered anything yet.</h4>
-          )}
+          <p>View and manage your order history</p>
+          <Link to="/orders" className="profile-btn">
+            View My Orders
+          </Link>
         </div>
       </div>
     </div>
